@@ -1,0 +1,73 @@
+struct task_struct {
+1028        volatile long state;    /* -1 unrunnable, 0 runnable, >0 stopped */
+1029        void *stack;
+1030        atomic_t usage;
+1031        unsigned int flags;     /* per process flags, defined below */
+1032        unsigned int ptrace;
+1033
+1034#ifdef CONFIG_SMP
+1035        struct llist_node wake_entry;
+1036        int on_cpu;
+1037#endif
+1038        int on_rq;
+1039
+1040        int prio, static_prio, normal_prio;
+1041        unsigned int rt_priority;
+1042        const struct sched_class *sched_class;
+1043        struct sched_entity se;
+1044        struct sched_rt_entity rt;
+1045#ifdef CONFIG_CGROUP_SCHED
+1046        struct task_group *sched_task_group;
+1047#endif
+1048
+1049#ifdef CONFIG_PREEMPT_NOTIFIERS
+1050        /* list of struct preempt_notifier: */
+1051        struct hlist_head preempt_notifiers;
+1052#endif
+1053
+1054        /*
+1055         * fpu_counter contains the number of consecutive context switches
+1056         * that the FPU is used. If this is over a threshold, the lazy fpu
+1057         * saving becomes unlazy to save the trap. This is an unsigned char
+1058         * so that after 256 times the counter wraps and the behavior turns
+1059         * lazy again; this to deal with bursty apps that only use FPU for
+1060         * a short time
+1061         */
+1062        unsigned char fpu_counter;
+1063#ifdef CONFIG_BLK_DEV_IO_TRACE
+1064        unsigned int btrace_seq;
+1065#endif
+1066
+1067        unsigned int policy;
+1068        int nr_cpus_allowed;
+1069        cpumask_t cpus_allowed;
+1070
+1071#ifdef CONFIG_PREEMPT_RCU
+1072        int rcu_read_lock_nesting;
+1073        char rcu_read_unlock_special;
+1074        struct list_head rcu_node_entry;
+1075#endif /* #ifdef CONFIG_PREEMPT_RCU */
+1076#ifdef CONFIG_TREE_PREEMPT_RCU
+1077        struct rcu_node *rcu_blocked_node;
+1078#endif /* #ifdef CONFIG_TREE_PREEMPT_RCU */
+1079#ifdef CONFIG_RCU_BOOST
+1080        struct rt_mutex *rcu_boost_mutex;
+1081#endif /* #ifdef CONFIG_RCU_BOOST */
+1082
+1083#if defined(CONFIG_SCHEDSTATS) || defined(CONFIG_TASK_DELAY_ACCT)
+1084        struct sched_info sched_info;
+1085#endif
+1086
+1087        struct list_head tasks;
+1088#ifdef CONFIG_SMP
+1089        struct plist_node pushable_tasks;
+1090#endif
+1091
+1092        struct mm_struct *mm, *active_mm;
+1093#ifdef CONFIG_COMPAT_BRK
+1094        unsigned brk_randomized:1;
+1095#endif
+1096#if defined(SPLIT_RSS_COUNTING)
+1097        struct task_rss_stat    rss_stat;
+1098#endif
+1099/* task state */

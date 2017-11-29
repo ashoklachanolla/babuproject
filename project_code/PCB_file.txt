@@ -1,0 +1,74 @@
+struct task_struct {
+
+        volatile long state;    /* -1 unrunnable, 0 runnable, >0 stopped */
+        void *stack;
+        atomic_t usage;
+        unsigned int flags;     /* per process flags, defined below */
+        unsigned int ptrace;
+
+#ifdef CONFIG_SMP
+        struct llist_node wake_entry;
+        int on_cpu;
+#endif
+        int on_rq;
+
+        int prio, static_prio, normal_prio;
+        unsigned int rt_priority;
+        const struct sched_class *sched_class;
+        struct sched_entity se;
+        struct sched_rt_entity rt;
+#ifdef CONFIG_CGROUP_SCHED
+        struct task_group *sched_task_group;
+#endif
+
+#ifdef CONFIG_PREEMPT_NOTIFIERS
+        /* list of struct preempt_notifier: */
+        struct hlist_head preempt_notifiers;
+#endif
+
+        /*
+         * fpu_counter contains the number of consecutive context switches
+         * that the FPU is used. If this is over a threshold, the lazy fpu
+         * saving becomes unlazy to save the trap. This is an unsigned char
+         * so that after 256 times the counter wraps and the behavior turns
+         * lazy again; this to deal with bursty apps that only use FPU for
+         * a short time
+         */
+        unsigned char fpu_counter;
+#ifdef CONFIG_BLK_DEV_IO_TRACE
+        unsigned int btrace_seq;
+#endif
+
+        unsigned int policy;
+        int nr_cpus_allowed;
+        cpumask_t cpus_allowed;
+
+#ifdef CONFIG_PREEMPT_RCU
+        int rcu_read_lock_nesting;
+        char rcu_read_unlock_special;
+        struct list_head rcu_node_entry;
+#endif /* #ifdef CONFIG_PREEMPT_RCU */
+#ifdef CONFIG_TREE_PREEMPT_RCU
+        struct rcu_node *rcu_blocked_node;
+#endif /* #ifdef CONFIG_TREE_PREEMPT_RCU */
+#ifdef CONFIG_RCU_BOOST
+        struct rt_mutex *rcu_boost_mutex;
+#endif /* #ifdef CONFIG_RCU_BOOST */
+
+#if defined(CONFIG_SCHEDSTATS) || defined(CONFIG_TASK_DELAY_ACCT)
+        struct sched_info sched_info;
+#endif
+
+        struct list_head tasks;
+#ifdef CONFIG_SMP
+        struct plist_node pushable_tasks;
+#endif
+
+        struct mm_struct *mm, *active_mm;
+#ifdef CONFIG_COMPAT_BRK
+        unsigned brk_randomized:1;
+#endif
+#if defined(SPLIT_RSS_COUNTING)
+        struct task_rss_stat    rss_stat;
+#endif
+/* task state */
